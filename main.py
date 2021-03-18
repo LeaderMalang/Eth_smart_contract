@@ -33,9 +33,9 @@ def transaction():
         address=contract_address, abi=abi,
     )
     body = request.get_json()
-    result, error = UserSchema().load(body)
-    if error:        
-        return jsonify(error), 422
+    result = UserSchema().load(body)
+    if result['name'] =='' or result['gender']  =='':
+        return jsonify(result), 422
     tx_hash = user.functions.setUser(
         result['name'], result['gender']
     )
@@ -44,4 +44,9 @@ def transaction():
     w3.eth.waitForTransactionReceipt(tx_hash)
     user_data = user.functions.getUser().call()
     return jsonify({"data": user_data}), 200
+
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 
